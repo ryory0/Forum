@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+{% load static %}
+{% load widget_tweaks %}
+<html lang="ja" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>登録ページ</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="{% static 'js/register.js' %}"></script>
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='slim' %}
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .register-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        .form input, .form button {
+            margin-bottom: 10px;
+        }
+        .form button {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .form .message {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .form .message a {
+            color: #007bff;
+        }
+        .form .error {
+            color: red;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-page">
+        <div class="form">
+            {% if AccountCreate %}
+                <div>ご登録いただいたアドレスにメールを送信しました。記載されているリンクをクリックしてユーザーをアクティベートしてください。</div>
+            {% else %}
+                <form enctype="multipart/form-data" method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ account_form.username|add_class:"form-control" }}
+                    </div>
+                    <div class="form-group">
+                        {{ account_form.email|add_class:"form-control" }}
+                    </div>
+                    <div class="form-group">
+                        {{ account_form.password|add_class:"form-control" }}
+                    </div>
+                    <div class="form-group">
+                        {{ add_account_form.last_name|add_class:"form-control" }}
+                    </div>
+                    <div class="form-group">
+                        {{ add_account_form.first_name|add_class:"form-control" }}
+                    </div>
+                    {% if account_form.errors %}
+                        <div class="error">
+                            <ul>
+                                {% for field_errors in account_form.errors.values %}
+                                    {% for error in field_errors %}
+                                        <li>{{ error }}</li>
+                                    {% endfor %}
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                    <p class="message">既にアカウントをお持ちですか? <a href="{% url 'app_folder:Login' %}">SIGN IN</a></p>
+                    <button type="submit" class="btn btn-primary btn-block">CREATE</button>
+                    <p class="message"><a href="{% url 'app_folder:thread' %}">トップページへ</a></p>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

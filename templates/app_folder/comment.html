@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load bbs %}
+{% block extrajs %}
+<script type="text/javascript">
+  /* ポストに対するイイね */
+  document.getElementById('ajax-like-for-post').addEventListener('click', e => {
+    e.preventDefault();
+    const url = '{% url "app_folder:like_for_post" %}';
+    fetch(url, {
+      method: 'POST',
+      body: `post_pk={{thread.pk}}`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        'X-CSRFToken': '{{ csrf_token }}',
+      },
+    }).then(response => {
+      return response.json();
+    }).then(response => {
+      const counter = document.getElementById('like-for-post-count')
+      counter.textContent = response.like_for_post_count
+      const icon = document.getElementById('like-for-post-icon')
+      // 作成した場合はハートを塗る
+      if (response.method == 'create') {
+        icon.classList.remove('far')
+        icon.classList.add('fas')
+        icon.id = 'like-for-post-icon'
+      } else {
+        icon.classList.remove('fas')
+        icon.classList.add('far')
+        icon.id = 'like-for-post-icon'
+      }
+    }).catch(error => {
+      console.log(error);
+    });
+  });
+  /* コメントに対するイイね */
+  const likeCommentButtons = document.getElementsByClassName('ajax-like-for-comment');
+  for (const button of likeCommentButtons) {
+    button.addEventListener('click', e => {
+      const pk = button.dataset.pk
+      e.preventDefault();
+      const url = '{% url "app_folder:like_for_comment" %}';
+      fetch(url, {
+        method: 'POST',
+        body: `comment_pk=${pk}`,
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+      }).then(response => {
+        return response.json();
+      }).then(response => {
+        const counter = document.getElementById(`like-for-comment-count-${pk}`)
+        const icon = document.getElementById(`like-for-comment-icon-${pk}`)
+        counter.textContent = response.like_for_comment_count
+        if (response.method == 'create') {
+          icon.classList.remove('far')
+          icon.classList.add('fas')
+          icon.id = `like-for-comment-icon-${pk}`
+        } else {
+          icon.classList.remove('fas')
+          icon.classList.add('far')
+          icon.id = `like-for-comment-icon-${pk}`
+        }
+      }).catch(error => {
+        console.log(error);
+      });
+    });
+  }
+</script>
+{% endblock %}
+{% block contents %}
+<section id="head" class="mt-5">
+  <a href='{% url "app_folder:thread" %}' class='btn btn-outline-primary ml-2'>一覧に戻る</a>
+  {% include 'pagination.html' %}
+    <div class="card mt-4">
+        <div class="card-body">
+          <div class="card-title">
+            <h1 class="mb-0">#{{ thread.pk }} {{ thread.title }}</h1>
+            <p class="card-text">{{ thread.author }}</p>
+            <p class="card-text">{{ thread.content }}</p>
+          </div>
+          <i class="far fa-calendar-alt"></i>
+          <span class="fs-6">{{ thread.created_at | date:'Y-m-d' }}</span>
+          <div class="card-footer">
+            {% if user.is_authenticated %}
+              {% if is_user_liked_for_post %}
+              <button type="button" id="ajax-like-for-post" style="border:none;background:none">
+                <!-- すでにイイねしている時はfasクラス -->
+                <i class="fas fa-heart text-danger" id="like-for-post-icon"></i>
+              </button>
+              {% else %}
+              <button type="button" id="ajax-like-for-post" style="border:none;background:none">
+                <!-- イイねしていないときはfarクラス -->
+                <i class="far fa-heart text-danger" id="like-for-post-icon"></i>
+              </button>
+              {% endif %}
+            {% endif %}
+            <!-- イイねの数 -->
+            <span id="like-for-post-count">{{ thread.thread_like_count }}</span>
+            <span>件のイイね</span>
+          </div>
+        </div>
+    </div>
+
+    {% for comment in page_obj %}
+    <div class="card mt-4">
+        <div class="card-body">
+            <div class="card-title">
+                <span class="fs-6">{{ comment.created_datetime | date:'Y-m-d'  }}</span>
+                <p class="fs-6">{{ comment.user.username }}</p>
+            </div>
+            <div class="card-text">
+                <div class="mt-4 mb-4">
+                  {{ comment.comment }}
+                </div>
+                <div class="card-footer">
+                  {% if user.is_authenticated %}
+                    {{ comment_like_data }}
+                    {% if comment.pk in liked_comment_pks %}
+                        <button type="button" class="ajax-like-for-comment" data-pk="{{ comment.pk }}" style="border:none;background:none">
+                            <i class="fas fa-heart text-danger" id="like-for-comment-icon-{{comment.pk}}"></i>
+                        </button>
+                    {% else %}
+                        <button type="button" class="ajax-like-for-comment" data-pk="{{ comment.pk }}" style="border:none;background:none">
+                            <i class="far fa-heart text-danger" id="like-for-comment-icon-{{comment.pk}}"></i>
+                        </button>
+                    {% endif %}
+                  {% endif %}
+                    <span id="like-for-comment-count-{{comment.pk}}">{{ comment.comment_like_count }}</span>
+                    <span>件のイイね</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endfor %}
+<section id="head" class="mt-5">
+  {% include 'pagination.html' %}
+  <a href='{% url "app_folder:thread" %}' class='btn btn-outline-primary ml-2'>一覧に戻る</a>
+  
+  <main class="container">
+    <form method="POST" action="{% url 'app_folder:create_comment' %}">
+      {% csrf_token %}
+      <input type="hidden" value="{{ thread.id }}" name="thread_id">
+      <div class="mb-3">
+        {% if user.is_authenticated %}
+          <label class="form-label">Username: {{ user.username }}</label>
+        {% else %}
+          <label class="form-label">コメントを残すにはログインが必要です</label>
+        {% endif %}
+      </div>
+      <div class="mb-3">
+        {{ form.comment }}
+      </div>
+      <div class="mb-3">
+        <button type='submit' class='btn btn-primary'>Create</button>
+      </div>
+    </form>
+  </main>
+</section>
+
+{% endblock %}

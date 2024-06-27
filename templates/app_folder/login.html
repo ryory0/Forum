@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+{% load static %}
+{% load bootstrap4 %}
+<html lang="ja" dir="ltr">
+<head>
+    <meta charset="utf-8">
+    <title>ログインページ</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='slim' %}
+    <!-- <link rel="stylesheet" href="{% static 'css/style_login.css' %}"> -->
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+        .login-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .form {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        .form input {
+            margin-bottom: 10px;
+        }
+        .form button {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .form .message {
+            margin-top: 15px;
+            text-align: center;
+        }
+        .form .message a {
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+<div class="login-page">
+  <div class="form">
+    <form method="post" action="{% url 'app_folder:Login' %}">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="username">ユーザー名</label>
+        <input type="text" class="form-control" id="username" placeholder="username" name="username">
+      </div>
+      <div class="form-group">
+        <label for="password">パスワード</label>
+        <input type="password" class="form-control" id="password" placeholder="password" name="password">
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">LOGIN</button>
+      <p class="message">アカウントがないですか？ <a href="{% url 'app_folder:register' %}">CREATE</a></p>
+      <p class="message"><a href="{% url 'app_folder:thread' %}">トップページへ</a></p>
+    </form>
+  </div>
+</div>
+</body>
+</html>

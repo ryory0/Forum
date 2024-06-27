@@ -1,0 +1,10 @@
+{% load i18n %}
+{% blocktrans %}
+以下のリンクをクリックして、アカウントをアクティベーションしてください。
+{% endblocktrans %}
+
+{% block activation_url %}
+<a href="{% url 'users-activation' activate_token=activate_token %}">
+    {% url 'users-activation' activate_token=activate_token %}
+</a>
+{% endblock %}

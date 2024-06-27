@@ -1,0 +1,17 @@
+/* styles.css */
+.container {
+    margin: 0 auto;
+}
+
+.card {
+    width: 100%;
+}
+
+.card-title a {
+    color: #000; /* 色を黒に設定 */
+    text-decoration: none; /* 下線を削除 */
+}
+
+.card-title a:hover {
+    text-decoration: underline; /* ホバー時に下線を追加 */
+}

@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block contents %}
+  <div class="container mt-5" style="width: 100%;">
+    <h1 id="head" class="mb-4">投稿一覧</h1>
+    <form action="" method="get" class="mb-5 text-left">
+      <div class="form-row">
+        <div class="col-5">
+          <input name="query" value="{{ request.GET.query }}" type="text" class="form-control" placeholder="検索キーワード">
+          <div class="mt-2">
+            <button type="submit" class="btn btn-primary">検索する</button>
+            <a href="./" class="btn btn-secondary ml-2">クリア</a><br>
+            <div class="form-check form-check-inline mt-2">
+              <input class="form-check-input" type="checkbox" name="title" value="1">
+              <label class="form-check-label">タイトル</label>
+            </div>
+            <div class="form-check form-check-inline mt-2">
+              <input class="form-check-input" type="checkbox" name="article" value="1">
+              <label class="form-check-label">投稿内容</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <p>
+      <a href='{% url "app_folder:create" %}' class='btn btn-primary'>新規投稿</a>
+    </p>
+
+    {% include 'pagination.html' %}
+    
+    <section class="mt-5">
+      {% for thread in object_list %}
+        <div class="card mt-4">
+          <div class="card-body">
+            <div class="card-title">
+              <h1><a class="text-dark" href="{% url 'app_folder:detail' thread.pk %}">#{{ thread.pk }} {{ thread.title }}</a></h1>
+              <p class="card-text">{{ thread.author }}</p>
+              <p class="card-text">{{ thread.content }}</p>
+            </div>
+            <div class="card-text">
+              <i class="far fa-calendar-alt card-text text-dark"></i>
+              <span class="fs-6 card-text text-dark">{{ thread.created_at | date:'Y-m-d' }}</span>
+              <div class="card-text card-text text-dark">
+                <a href='{% url "app_folder:display_comments" thread.pk %}'><i class="fas fa-comment-dots"></i></a>
+                <i class="fas fa-heart text-danger"></i>
+                <span class="fs-6">{{ thread.thread_like_count }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </section>
+
+    <p>
+      {% include 'pagination.html' %}
+      <p>
+        <a href='{% url "app_folder:create" %}' class='btn btn-primary'>新規投稿</a>
+      </p>
+    </p>
+  </div>
+
+  <!-- 外部CSSファイルを読み込む -->
+  <link rel="stylesheet" href="{% static 'app_folderstatic/css/style_thread_list.css' %}">
+{% endblock %}

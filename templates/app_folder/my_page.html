@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% load custom_filters %}
+
+{% block contents %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- サイドバー（閲覧履歴） -->
+        <div class="col-md-3 sidebar">
+          <h2>閲覧履歴</h2>
+          <ul class="list-group">
+              {% for history in recent_view_history %}
+              <li class="list-group-item">
+                  <a href="{% url 'app_folder:detail' history.thread.pk %}">#{{ history.thread.pk }} {{ history.thread.title|truncate_title }}</a>
+                  <br>
+                  <small>{{ history.viewed_at|date:"Y-m-d H:i" }}</small>
+              </li>
+              {% endfor %}
+          </ul>
+        </div>
+
+        <!-- メインコンテンツ -->
+        <div class="col-md-9 offset-md-3 main-content">
+            <h1 id="head" class="mt-3 mb-4">{{ user.username }}さんの投稿</h1>
+            <p>
+              <a href='{% url "app_folder:create" %}' class='btn btn-primary'>新規投稿</a>
+            </p>
+            {% include 'pagination.html' %}
+            <section class="mt-5">
+              {% for thread in page_obj %}
+              <a href='{% url "app_folder:display_comments" thread.pk %}'>
+                <div class="card mt-4">
+                  <div class="card-body">
+                    <div class="card-title">
+                      <h1><a class="text-dark" href="{% url 'app_folder:detail' thread.pk %}"> #{{ thread.pk }} {{ thread.title }}</a></h1>
+                      <p class="card-text">{{ thread.author }}</p>
+                      <p class="card-text">{{ thread.content }}</p>
+                    </div>
+                    <i class="far fa-calendar-alt"></i>
+                    <span class="fs-6">{{ thread.created_at | date:'Y-m-d' }}</span>
+                    <div class="card-text card-text text-dark">
+                      <a href='{% url "app_folder:display_comments" thread.pk %}'><i class="fas fa-comment-dots"></i></a>
+                      <i class="fas fa-heart text-danger"></i>
+                      <span class="fs-6">{{ thread.thread_like_count }}</span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+              {% endfor %}
+            </section>
+            <p>  
+              {% include 'pagination.html' %}
+                <p>
+                  <a href='{% url "app_folder:create" %}' class='btn btn-primary'>新規投稿</a>
+                </p>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .sidebar {
+        position: fixed;
+        top: 150px; /* 必要に応じて調整 */
+        left: 5px; /* 必要に応じて調整 */
+        width: 350px; /* 必要に応じて調整 */
+    }
+    .main-content {
+        margin-left: 0px; /* 左に動かす */
+        width: 100%; /* 要素の幅を親要素の100%に設定 */
+        
+    }
+</style>
+
+{% endblock %}
+
+

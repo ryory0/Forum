@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+ 
+{% block contents %}
+ 
+<h1>投稿の削除</h1>
+<p>以下を削除しますか?</p>
+<p>{{ thread.content }}</p>
+<p>{{ thread.user_name }}</p>
+<p>{{ thread.author }}</p>
+<p>{{ thread.created_at|date:"Y-m-j H:i:s" }}</p>
+<p>{{ thread.updated_at|date:"Y-m-j H:i:s" }}</p>
+ 
+<form action='' method='post'>{% csrf_token %}
+    <a href='JavaScript:history.back()' class='btn btn-outline-primary'>削除しないで戻る</a>
+    <button type='submit' class='submit delete btn btn-danger'>削除する</button>
+</form>
+ 
+{% endblock %}

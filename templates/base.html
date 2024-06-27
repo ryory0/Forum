@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='slim' %}
+{% load static %}
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+      <!-- Font Awesome -->
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet" />
+      <!-- Google Fonts -->
+      <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
+      <!-- MDB -->
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/3.10.1/mdb.min.css" rel="stylesheet" />
+    {% block extra_css %}{% endblock %}
+    <style>
+      #head {
+        padding-top: 78px; /* １番上のナビゲーションバーの高さ分の余白 */
+      }
+    </style>  
+  </head>
+
+  <body>
+    <!-- ↓↓１番上のナビゲーションバー↓↓ -->
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-2">
+          <nav class="navbar navbar-expand-lg fixed-top navbar-dark bs-navbar" style='background-color:cadetblue;' id="bs-navbar">
+            <a class="navbar-brand mr-md-2" href="{% url 'app_folder:thread' %}">
+              学習掲示板
+            </a>
+              <!-- ↓↓レイアウトを調整する為のダミー↓↓ -->
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item"><a class="nav-link" href="#">   </a></li>
+                <li class="nav-item"><a class="nav-link" href="#">   </a></li>
+              </ul>
+              <!-- ↑↑ダミーここまで↑↑ -->                            
+              <ul class="navbar-nav">
+                <li class="nav-item"><a class="nav-link" href="/thread_list" >投稿一覧</a></li>
+                {% if user.is_authenticated %}
+                  <li class="nav-item"><a class="nav-link" href="/my_page">{{ request.user }}</a></li>
+                  <li class="nav-item"><a class="nav-link" href="{% url 'app_folder:Logout' %}" >Logout</a></li>
+                {% else %}
+                <li class="nav-item"><a class="nav-link" href="{% url 'app_folder:Login' %}" >Login</a></li>
+                {% endif %}
+              </ul>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </div>
+    <!-- ↓↓コンテンツ本体↓↓ -->
+      <div class="col-12"><div class="container pt-5 pb-6" style="max-width:720px;">
+        {% block contents %}{% endblock %}</div>
+      </div>
+    <!-- ↑↑コンテンツ本体ここまで↑↑ -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/4.0.0/mdb.min.js"></script>
+    {% block extrajs %}{% endblock %}
+  </body>
+</html>
+<!-- サイドバーに使用しているアイコン -->
+<!-- 使用できるアイコンの一覧： https://voyager-jp.com/blog/javascript/feather/ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
+<script>feather.replace()</script>

@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block extrajs %}
+<script type="text/javascript">
+  /* ポストに対するイイね */
+  document.getElementById('ajax-like-for-post').addEventListener('click', e => {
+    e.preventDefault();
+    const url = '{% url "app_folder:like_for_post" %}';
+    fetch(url, {
+      method: 'POST',
+      body: `post_pk={{thread.pk}}`,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=utf-8',
+        'X-CSRFToken': '{{ csrf_token }}',
+      },
+    }).then(response => {
+      return response.json();
+    }).then(response => {
+      // イイね数を書き換える
+      const counter = document.getElementById('like-for-post-count')
+      counter.textContent = response.like_for_post_count
+      const icon = document.getElementById('like-for-post-icon')
+      // 作成した場合はハートを塗る
+      if (response.method == 'create') {
+        icon.classList.remove('far')
+        icon.classList.add('fas')
+        icon.id = 'like-for-post-icon'
+      } else {
+        icon.classList.remove('fas')
+        icon.classList.add('far')
+        icon.id = 'like-for-post-icon'
+      }
+    }).catch(error => {
+      console.log(error);
+    });
+  });
+</script>
+{% endblock %}
+{% block contents %}
+<div id ="head" class="container">
+  <div class="card mt-3">
+    <div class="card-header">
+      <h1 class="mb-0">{{ thread.title }}</h1>
+      <div class="d-flex justify-content-between align-items-center">
+        <p class="m-0">{{ thread.author }}</p>
+        <p class="m-0">{{ thread.created_at|date:"Y-m-j H:i:s" }}</p>
+      </div>
+    </div>
+    <div class="card-body">
+      <p class="card-text">{{ thread.content }}</p>
+      {% if user.is_authenticated %}
+        {% if is_user_liked_for_post %}
+          <button type="button" id="ajax-like-for-post" style="border:none;background:none">
+            <!-- すでにイイねしている時はfasクラス -->
+            <i class="fas fa-heart text-danger" id="like-for-post-icon"></i>
+          </button>
+        {% else %}
+          <button type="button" id="ajax-like-for-post" style="border:none;background:none">
+            <!-- イイねしていないときはfarクラス -->
+            <i class="far fa-heart text-danger" id="like-for-post-icon"></i>
+          </button>
+        {% endif %}
+      {% endif %}
+        <!-- イイねの数 -->
+        <span id="like-for-post-count">{{ like_for_post_count }}</span>
+        <span>件のイイね</span>
+    </div>
+    <div class="card-footer">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <a href='{% url "app_folder:display_comments" thread.pk %}' class='btn btn-outline-primary ml-2'>コメント欄</a>
+          <a href='{% url "app_folder:thread" %}' class='btn btn-outline-primary mr-2'>一覧に戻る</a>
+        </div>
+        <div>
+          {% if user == thread.author %}
+          <a href='{% url "app_folder:update" thread.id %}' class='btn btn-outline-primary mr-2'>編集</a>
+          <a href='{% url "app_folder:delete" thread.id %}' class='btn btn-danger'>削除</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
