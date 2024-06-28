@@ -143,7 +143,7 @@ def publish_activate_token(sender, instance, created, **kwargs):
             expired_at=datetime.now()+timedelta(days=settings.ACTIVATION_EXPIRED_DAYS),
         )
         subject = 'Please Activate Your Account'
-        message = f'以下のURLにアクセスしていただきますと登録が完了となります。 \n http://127.0.0.1:8000/users/{user_activate_token.activate_token}/activation/'
+        message = f'以下のURLにアクセスしていただきますと登録が完了となります。 \n https://forum-appry-be3dcf92c9d9.herokuapp.com/users/{user_activate_token.activate_token}/activation/'
         from_email = settings.DEFAULT_FROM_EMAIL
         recipient_list = [
             instance.email,
