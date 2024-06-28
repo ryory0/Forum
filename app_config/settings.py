@@ -35,7 +35,7 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['firstmyappry.herokuapp.com', '127.0.0.1', 'localhost'] # Heroku上のアプリケーションのURLを設定する
+ALLOWED_HOSTS = ['forum-app.herokuapp.com', '127.0.0.1', 'localhost'] # Heroku上のアプリケーションのURLを設定する
 LOGIN_REDIRECT_URL = 'app_folder:Login'
 
 # Application definition
