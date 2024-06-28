@@ -11,6 +11,7 @@ urlpatterns = [
     path("my_page", views.home, name="my_page"),
     path('accounts/login/',views.Login,name='Login'),
     path("logout",views.Logout,name="Logout"),
+    path('users/<str:token>/activation/', views.activate_user, name='activate_user'),
     path('<int:pk>', views.DetailView.as_view(), name='detail'),
     path('create/', views.CreateView.as_view(), name='create'),
     path('<int:pk>/update/', views.UpdateView.as_view(), name='update'),
